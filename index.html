@@ -163,6 +163,10 @@
               </div>
               <p>Figure 3: GPIO Pin Table</p>
               <h3>3D Printed Enclosure</h3>
+              <figure>
+                <img class="img-rounded" src="pics/IMG_0107.jpg" alt="CAD Example" width="540" height="460">
+              </figure>
+              <br>
               <p style="text-align: left;padding: 0px 30px;">
                 The PiDeck DJ controller's enclosure was created using 3D printing for a custom fit for all hardware components. The design was made using Shapr3D CAD software, allowing precise parametric modeling to accommodate the Raspberry Pi, buttons, rotary encoders, and piTFT screen, with specific features for mounting.The final enclosure was 3D printed on a Bambu Lab A1 mini using PLA filament.
                 </p>
@@ -187,8 +191,7 @@
                 <br>
 
                 <p style="text-align: left;padding: 0px 30px;">
-                  Sure, here is your text with improved grammar and clarity:
-
+                  
 To walk through the logic, the program runs until a quit variable is set by pressing a piTFT button (GPIO 27). The program monitors all button presses and rotary encoder changes using callbacks. If an event occurs, the program executes the corresponding callback function, which requires adjustments in the environment.
 
 Firstly, the rotary encoders are used to scroll through songs, with their callbacks changing the index of the currently hovered song. Next, the potentiometer data, although not processed directly by the Raspberry Pi, are used to set the volume variables of the songs. The total volume of a song is composed of three variables: one for the associated potentiometer (left or right), one for the center potentiometer (crossfade), and one for an additional constant (overall scaling). Volume is contained in the range [0,1], with 0 meaning silent and 1 meaning maximum volume.
@@ -278,7 +281,7 @@ The large push buttons control song selection and pausing. Each side has two but
 
               <h2>Rotary Encoders</h2>
               <figure>
-                <img class="img-rounded" src="pics/encoder.png" alt="Rotary Encoder" width="240" height="240">
+                <img class="img-rounded" src="pics/encoder.png" alt="Rotary Encoder" width="320" height="240">
                 <figcaption>Rotary Encoder</figcaption>
               </figure>
 
