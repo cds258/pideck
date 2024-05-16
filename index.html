@@ -107,11 +107,14 @@
                 <figcaption>Hardware Overview</figcaption>
               </figure>
               <br>
-              <p style="text-align: left;padding: 0px 30px;">Our hardware for the Raspberry Pi consisted of 4 large push buttons, 4 small push buttons, 2 rotary encoders on top of piTFT. The initial thought was hardware would be simple as the sensors chosen were not very complicated. However, a problem was the management of the sensors with limited GPIO pins on the Raspberry Pi since we needed to use the piTFT to display the song selection. We initially were planning on using an ADC for our linear potentiometers since the Raspberry Pi does not contain a built in ADC. However, we ran out of room so we decide on using an Arduino Uno which has a built-in ADC. All three potentiometers were wired to the Uno. The Arduino had a USB connection that we utilized to send the data from the potentiometers to the Pi. We eventually ran out of space for two small push buttons, but they were powered.
-
-                Given the oddity of the sensors chosen, see references for more information on the individual sensors. 
+              <p style="text-align: left;padding: 0px 30px;">
+                Our hardware setup for the Raspberry Pi consisted of 4 large push buttons, 4 small push buttons, 2 rotary encoders, and a piTFT display. Initially, we thought the hardware setup would be simple since the sensors chosen were not very complicated. However, we encountered a problem managing the sensors with the limited GPIO pins on the Raspberry Pi, especially since we needed to use the piTFT to display the song selection.
                 
-                Here is the breakdown of the GPIO pins used excluding piTFT.
+                We initially planned to use an ADC for our linear potentiometers since the Raspberry Pi does not have a built-in ADC. However, we ran out of room and decided to use an Arduino Uno, which has a built-in ADC. All three potentiometers were wired to the Uno, which was connected to the Pi via a USB connection to send the data from the potentiometers.
+                
+                Eventually, we ran out of space for two small push buttons, but they were still powered. Given the unique nature of the sensors chosen, please see the references for more information on the individual sensors.
+                
+                Here is the breakdown of the GPIO pins used, excluding the piTFT.
              
                 </p>
                 <div class="table-responsive">
@@ -159,49 +162,47 @@
                   </table>
               </div>
               <p>Figure 3: GPIO Pin Table</p>
-              <h3>3D Printed enclosure</h3>
+              <h3>3D Printed Enclosure</h3>
               <p style="text-align: left;padding: 0px 30px;">
-                The physical dj board was 3-D printed
+                The PiDeck DJ controller's enclosure was created using 3D printing for a custom fit for all hardware components. The design was made using Shapr3D CAD software, allowing precise parametric modeling to accommodate the Raspberry Pi, buttons, rotary encoders, and piTFT screen, with specific features for mounting.The final enclosure was 3D printed on a Bambu Lab A1 mini using PLA filament.
                 </p>
               <h3>Software</h3>
+              <h4>Pygame.Mixer</h4>
               <p style="text-align: left;padding: 0px 30px;">
-                Pygame.Mixer: 
+                
+                We ultimately had to make a big decision between pygame.mixer.Sound and pygame.mixer.music. The main trade-offs were the features we could implement. With Sound, we could add multiple channels, allowing us to have a dual song setup and add sound effects. With music, we could mutate a single song, including adjusting play speed and position, which would enable features like skipping through the song and changing the playback speed.
 
-We ultimately had a big decision between pygame.mixer.sound and pygame.mixer.music. The main trade offs were the features we could implement. With sound, we could add multiple channels which allowed us to have a dual song setup and add in sound effects. With music, we could mutate a single song including play speed and position which would allow features of skipping through the sound and changing the sound speed. We ultimately decided to go with mixer.sound because we believed the additional channels were the most valuable feature of our project.
+                We ultimately decided to go with mixer.Sound because we believed the additional channels were the most valuable feature for our project.
 
-
-
-Overall Logic Overview:
-
-The software component of the project final contained one file final_pt3.py. In the file we handle gathering all the data, playing music and adjusting parameters. Below models the overall logic of the software.
-
-                </p>
+              </p>
+                <h4>Overall Logic Overview</h4>
+                <p style="text-align: left;padding: 0px 30px;">
+        
+                  The RPi's software component of the final project contained one file, "final_pt3.py". In this file, we handle gathering all the data, playing music, and adjusting parameters. Below is an overview of the overall logic of the software.
+                  </p>
                 <figure>
-                  <img class="img-rounded" src="pics/software.png" alt="Commercial DJ Controller" width="540" height="460">
+                  <img class="img-rounded" src="pics/software.png" alt="Software Overview" width="540" height="460">
                   <figcaption>Software Overview</figcaption>
                 </figure>
                 <br>
 
                 <p style="text-align: left;padding: 0px 30px;">
-                  To walk through the logic, the program runs until a quit variable is set, by pressing a piTFT button (GPIO 27). 
-                  
-                  The program monitors all button presses and rotary encoder changes with callbacks. If an event occurs, the program will run the given callback function.
-                  
-                  This requires adjustments in the environment. Firstly, the rotary encoders are used to scroll through songs. Their callbacks change an index of the current song hovered. Nextly, the potentiometer data, although not processed from the raspberry pi are used to set the volume variables of the songs. The total volume of a song is composed of 3 variables, one for the associated potentiometer(left or right), one for the center potentiometer(crossfade), and one for an additional constant(overall scaling). Volume is contained in the range [0,1] with 0 meaning silent and 1 meaning max volume. The left potentiometer is used to control the volume of the song chosen on the left side of the screen and the right potentiometer is used to control the volume of the song chosen on the right side of the screen. The crossfade sets the volumes of the two volumes relative to each other. If the slider is all the way to the left, the volume of the left song is maximized and the right is silent and vice versa. Finally, there is an overall scaling constant, which can be increased by pressing the left small button and decreased by the right small button as shown below.
-                  
-                  
-                  
-                  Depending on the speakers, the overall scaling of volume may be suited at a higher level than others. 
-                  
-                  Finally, the large push buttons control song selection and pausing. Each side has two, and the outer button is used for selecting songs and the inner button is used to pause and unpause the song. To know when paused, two state machines were created and are interdependent.
-                  </p>
+                  Sure, here is your text with improved grammar and clarity:
+
+To walk through the logic, the program runs until a quit variable is set by pressing a piTFT button (GPIO 27). The program monitors all button presses and rotary encoder changes using callbacks. If an event occurs, the program executes the corresponding callback function, which requires adjustments in the environment.
+
+Firstly, the rotary encoders are used to scroll through songs, with their callbacks changing the index of the currently hovered song. Next, the potentiometer data, although not processed directly by the Raspberry Pi, are used to set the volume variables of the songs. The total volume of a song is composed of three variables: one for the associated potentiometer (left or right), one for the center potentiometer (crossfade), and one for an additional constant (overall scaling). Volume is contained in the range [0,1], with 0 meaning silent and 1 meaning maximum volume.
+
+The left potentiometer controls the volume of the song chosen on the left side of the screen, and the right potentiometer controls the volume of the song chosen on the right side of the screen. The crossfade potentiometer sets the volumes of the two songs relative to each other. If the slider is all the way to the left, the volume of the left song is maximized and the right is silent, and vice versa. Finally, an overall scaling constant can be increased by pressing the left small button and decreased by pressing the right small button. Depending on the speakers, the overall scaling of the volume may need to be adjusted to a higher level than others.
+
+The large push buttons control song selection and pausing. Each side has two buttons: the outer button is used for selecting songs, and the inner button is used to pause and unpause the song. To manage the pause state, two interdependent state machines were created.</p>
                   <figure>
                     <img class="img-rounded" src="pics/fsm1.png" alt="Commercial DJ Controller" width="340" height="240">
                     <figcaption>Paused State Machine Diagram</figcaption>
                   </figure>
                   <br>
                   <p style="text-align: left;padding: 0px 30px;">
-                    As demonstrated in the figure, the paused state(initially paused) will transition to unpaused when the pause button is pressed in that state. The other transition occurs when the other state machine is in the playing state and the pause button is pressed. 
+                    As demonstrated in the figure, the paused state (initially paused) will transition to unpaused when the pause button is pressed in that state. The other transition occurs when the other state machine is in the playing state and the pause button is pressed. 
                   </p>
                   <figure>
                     <img class="img-rounded" src="pics/fsm2.png" alt="Commercial DJ Controller" width="380" height="240">
@@ -209,17 +210,20 @@ The software component of the project final contained one file final_pt3.py. In 
                   </figure>
                   <br>
                   <p style="text-align: left;padding: 0px 30px;">
-                    As demonstrated in the figure, the paused state(initially paused) will transition to unpaused when the pause button is pressed in that state. The other transition occurs when the other state machine is in the playing state and the pause button is pressed. The other state machine is for a song playing. If in the playing state, the song will transition to not playing if the pause state is unpaused and the paused button is pressed. The other transition was more difficult to design because drawing a progress bar of a song(discussed below) had issues with pausing. The two requirements are either a song is selected and unpaused(only occurs before the first song is chosen) or if the paused state machine is in the paused state and the pause button is pressed. An important note for both these state machines is that since there were two songs played, there were two sets of each state machine implemented, one for each song.
+                    As demonstrated in the figure, the paused state (initially paused) will transition to unpaused when the pause button is pressed in that state. The other transition occurs when the other state machine is in the playing state, and the pause button is pressed. The other state machine controls whether a song is playing. If in the playing state, the song will transition to not playing if the paused state is unpaused and the pause button is pressed.
 
-                    piTFT buttons were also incorporated. GPIO pins 17,22,23 were used for sound effects which would play on top of the music selected. They included a set DJ introduction, an airhorn sound, and a double scratch sound, although they are customizable. GPIO pin 27 is used to quit the program.
+                    The other transition was more difficult to design because drawing a progress bar for a song (discussed below) had issues with pausing. The two requirements are either a song is selected and unpaused (which only occurs before the first song is chosen) or the paused state machine is in the paused state and the pause button is pressed. An important note for both state machines is that since there were two songs played, there were two sets of each state machine implemented, one for each song.
                     
-                    Next, the screen is drawn where there are two main features. Firstly, all the names are displayed in a white color excluding the currently highlighted song (the song that the scroll is on) which is yellow. If the scroll changes, the yellow song changes. Secondly, the selected song is displayed below along with a progress bar showing the percentage of the song that is completed. We found the duration of the song and every iteration updated the bar to reflect the current time minus the start time and paused time. From a coding perspective, this was the most difficult part to figure out because our paused state machine was limited initially. We had to tweak our transitions for the unpaused to paused state because of a few issues. The three issues we encountered were when we switched songs, the progress bar wouldn’t reset, when we would pause and then unpause the bar would reset to blank, and when we paused then unpaused the bar would jump to the percentage of (current time - initial start time) / duration.
+                    piTFT buttons were also incorporated. GPIO pins 17, 22, and 23 were used for sound effects, which would play on top of the selected music. These included a set DJ introduction, an airhorn sound, and a double scratch sound, although they are customizable. GPIO pin 27 is used to quit the program.
                     
-                    Finally, the data from the potentiometers are received from the arduino (which just uses a filtered analog Read).
+                    Next, the screen is drawn with two main features. Firstly, all the song names are displayed in white, excluding the currently highlighted song (the song that the scroll is on), which is displayed in yellow. If the scroll changes, the highlighted song changes. Secondly, the selected song is displayed below along with a progress bar showing the percentage of the song that is completed. We found the duration of the song and, with every iteration, updated the bar to reflect the current time minus the start time and paused time.
+                    
+                    From a coding perspective, this was the most difficult part to figure out because our paused state machine was initially limited. We had to tweak our transitions for the unpaused to paused state due to a few issues. The three issues we encountered were: when we switched songs, the progress bar wouldn’t reset; when we paused and then unpaused, the bar would reset to blank; and when we paused then unpaused, the bar would jump to the percentage of (current time - initial start time) / duration. Finally, the data from the potentiometers are received from the Arduino (which just uses a filtered analog read).
+                    
                     
                   </p>
                   <p style="text-align: left;padding: 0px 30px;">
-                    The songs selected are customizable, as well as the sound effects. However, they are not customizable during the program. To substitute songs, you must add .wav files to the audio_files directory contained in the project. If that is an issue, .mp3 and .mov files work if you run the bash scripts contained in the folder. For visibility purposes, we recommend a max of 8 songs. To customize the sound effects, .wav files must be added in the root of the project and their names must be sound1.wav, sound2.wav and sound3.wav where the number corresponds to the number sound effect from the top piTFT button to the 3rd from top.
+                    The selected songs and sound effects are customizable but not during the program. To substitute songs, you must add .wav files to the audio_files directory contained in the project. If that is an issue, .mp3 and .mov files work if you run the bash scripts contained in the folder. For visibility purposes, we recommend a maximum of 8 songs. To customize the sound effects, .wav files must be added to the root of the project, and their names must be sound1.wav, sound2.wav, and sound3.wav, where the number corresponds to the sound effect from the top piTFT button to the third from the top.
                   </p>
 
 
@@ -281,6 +285,16 @@ The software component of the project final contained one file final_pt3.py. In 
 
               <p style="text-align: left;padding: 0px 30px;">
                 
+Wiring the Rotary Encoders
+
+The project uses two rotary encoders to control song selection and other functionalities. Each rotary encoder has two signal pins (A and B) and a common ground. For Encoder 1, pin A is connected to GPIO 20, pin B is connected to GPIO 21, and the ground is connected to a common ground on the Raspberry Pi. For Encoder 2, pin A is connected to GPIO 13, pin B is connected to GPIO 6, and the ground is connected to a common ground on the Raspberry Pi. It is crucial to connect the ground pins of the encoders to a common ground on the Raspberry Pi to ensure proper functioning.
+Using Rotary Encoders in PiDeck
+
+The rotary encoders are used to navigate through the song list and select tracks. The GPIO pins for the rotary encoders are set up as inputs with pull-up resistors, ensuring that the pins read high until they are actively pulled low by the encoder. The script includes functions to handle the rotary encoders' input by monitoring the state changes of pins A and B. By determining the sequence of these changes, the script can identify the direction of rotation (clockwise or counterclockwise).
+
+Based on the direction of the encoder rotation, the script updates the song list index, allowing users to scroll through available tracks. The song list index is incremented or decremented, and the display is updated to reflect the current selection. A separate thread continuously monitors the state of the rotary encoders. This thread ensures that any changes in the encoder's position are immediately detected and processed, providing real-time feedback to the user.
+
+This setup allows for intuitive navigation through the song list, enhancing the user experience of the PiDeck DJ controller. The rotary encoders provide a seamless way to select and manage tracks, making the controller more user-friendly and efficient.
                </p>
               </div>
 
@@ -291,16 +305,11 @@ The software component of the project final contained one file final_pt3.py. In 
       <div style="text-align:center;">
               <h2>Results</h2>
               <h3>Conclusions</h3>
-              <p style="text-align: left;padding: 0px 30px;">Ultimately we put together a final project encompassing all of our goals. Although we were not able to mutate music to speed up or slow down the songs, we encompassed several other features to manipulate music and incorporate entertaining music. Volume control, stop and start control, sound effects, and dual song playback allow many options of customization.
+              <p style="text-align: left;padding: 0px 30px;">Ultimately, we put together a final project that encompassed all of our goals. Although we were not able to mutate music to speed up or slow down the songs, we incorporated several other features to manipulate music and provide entertaining experiences. Volume control, stop and start control, sound effects, and dual song playback allow for many options for customization.
 
-                Our choice of pygame.mixer.sound was crucial in allowing us to play multiple songs at once and add neat sound effects. Drawing to the piTFT was important to give the DJ a clear sense of the progress of the music and the options for choosing songs. The physical board is a reasonable size and can be easily controlled by a single user.
-                </p>
+                Our choice of pygame.mixer.Sound was crucial in allowing us to play multiple songs simultaneously and add interesting sound effects. Drawing to the piTFT was important to give the DJ a clear sense of the progress of the music and the options for choosing songs. The physical board is a reasonable size and can be easily controlled by a single user. </p>
               <h3>Future Work</h3>
-              <p style="text-align: left;padding: 0px 30px;">If given more work there are four changes we would make to our DJ controller to expand the functionality. Firstly, the design when displayed on the piTFT had delays in the volume sliders which would needed to be adjusted. Secondly we would like to add more peripherals for more control. Below is an example of the updated logic.
-
-                Thirdly, in a different iteration of our DJ controller we would hope to restructure our audio output to allow for a system so we could change the speed and position of the audio files. Finally, encompassing a method to upload songs live to the dj board would allow more flexibility with music than a limited eight songs.
-                
-                </p>
+              <p style="text-align: left;padding: 0px 30px;">If given more time, there are four changes we would make to our DJ controller to expand its functionality. Firstly, the design displayed on the piTFT had delays in the volume sliders, which need to be adjusted. Secondly, we would like to add more peripherals for greater control. Below is an example of the updated logic. Thirdly, in a future iteration of our DJ controller, we would hope to restructure our audio output to allow for changing the speed and position of the audio files. Finally, incorporating a method to upload songs live to the DJ board would provide more flexibility with music than the current limit of eight songs.  </p>
 
       </div>
 
