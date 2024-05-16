@@ -50,8 +50,7 @@
             <li><a href="#intro">Introduction</a></li>
             <li><a href="#obj">Project Objective</a></li>
             <li><a href="#design">Design</a></li>
-            <li><a href="#drawings">Drawings</a></li>
-            <li><a href="#testing">Testing</a></li>
+            <li><a href="#drawings">Hardware Guide</a></li>
             <li><a href="#results">Results</a></li>
           </ul>
         </div><!--/.nav-collapse -->
@@ -75,7 +74,7 @@
 
       <div style="text-align:center;">
               <h2>Introduction</h2>
-              <p style="text-align: left;padding: 0px 30px;">One of the new trends in the younger generation is the rise of djing. Going to any club there will be a dj playing music with a very high tech dj controller. The technology of mixing music to manipulate music in a way that is entertaining has only expanded greatly. Our project leverages Pygame to take in audio files and mix songs together. With several peripherals we created a controller that combines music in entertaining ways for both a person to control and a person to listen to.</p>
+              <p style="text-align: left;padding: 0px 30px;"> At any club, you're likely to find a DJ using a high-tech controller to mix music. The technology behind mixing music has advanced significantly, allowing DJs to manipulate tracks in increasingly entertaining and innovative ways. However, commercial DJ controllers are often expensive and inaccessible, unnecessarily complicating entry into DJing as both a hobby and profession.</p>
       </div>
 
     <hr id='obj'>
@@ -90,9 +89,10 @@
           <div class="col-md-8" style="font-size:18px;">
           <h2>Project Objective:</h2>
           <ul>
-              <li>Manipulate music in an engaging way</li>
-                <li>Easily to understand controls.</li>
+              <li>Real-time playback and control of two audio tracks simultaneously </li>
+                <li>Controls that are easy to understand and intuitive to use</li>
             <li>Visually appealing board</li>
+            <li>Embedded design that doesn't require external software</li>
           </ul>
           </div>
       </div>
@@ -159,7 +159,7 @@
                   </table>
               </div>
               <p>Figure 3: GPIO Pin Table</p>
-              <h3>Physical</h3>
+              <h3>3D Printed enclosure</h3>
               <p style="text-align: left;padding: 0px 30px;">
                 The physical dj board was 3-D printed
                 </p>
@@ -234,8 +234,55 @@ The software component of the project final contained one file final_pt3.py. In 
 
       <div style="text-align:center;">
               <h2>Hardware Guide</h2>
-              <p style="text-align: left;padding: 0px 30px;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum lorem nulla, consectetur at leo vel, pretium bibendum nisl. Cras blandit quam a enim ultrices, eu convallis enim posuere. Donec eleifend enim sed purus consectetur, vitae cursus lectus varius. Vivamus consectetur felis nec est venenatis posuere. Phasellus vitae aliquet erat. In laoreet lacinia mollis. Quisque iaculis nisl fermentum pharetra lobortis. Donec rhoncus dui sem, ac molestie leo tristique vel. Phasellus in nibh feugiat, fringilla lectus in, elementum magna. Etiam quis dui condimentum, tempus ex in, dapibus est. Cras ut congue augue. Donec ac enim ex. Ut id tristique risus, vel porttitor quam. Sed ultricies enim eu nibh porttitor, vel sodales enim feugiat. Fusce volutpat venenatis magna ac ultrices. Curabitur eget urna ut nulla mattis convallis non eu diam.</p>
-      </div>
+              <h3>Slide Potentiometer</h3>
+              <figure>
+                <img class="img-rounded" src="pics/linearpot.png" alt="Commercial DJ Controller" width="380" height="240">
+                <figcaption>Slide Potentiometer Pinout</figcaption>
+              </figure>
+              <br>
+              <p style="text-align: left;padding: 0px 30px;">
+                Although there is no data sheet given, through much debugging, we discovered a working model and integrated three into our final project.
+                
+                
+                
+                
+                There are six pins contrary to the three given. Either pair of the left or right 3 pins(1 out, 1 Gnd, 1 Vcc).  With a 10kohm built in the resistor, the sensor handles input voltage values of 3.3V to 5V although 5V is preferred. Through scoping the output values, the peak output of Vin occurs when the slider is all the way toward the side of the Vcc
+                
+               
+                
+                The potentiometer needs to use an ADC for useful values with the Raspberry Pi. If using Arduino, just plug the output into an analog pin due to the built in ADC, and call analogRead(pin#) to store the data. Otherwise, here is one example of a common ADC. Although advertised as linear the potentiometer is most definitely exponential. The max value depends on the sensor itself, but generally log10(max) ~ 2.95 with a 5V power. The logarithmic results showed to be very linear. To capture the smallest values of the potentiometer and to prevent errors, when calling log10(value) remember if value = 0.00 then set it to 1 so it won’t cause a log(0) error.</p>
+     
+     
+              <h2>LED Push Buttons</h2>
+              <figure>
+                <img class="img-rounded" src="pics/button1.png" alt="Push Button Wiring 1" width="240" height="240">
+                <figcaption>Push Button Pin Wiring (LED on when pushed) </figcaption>
+              </figure>
+
+              <p style="text-align: left;padding: 0px 30px;">
+                There are two options to wire up the push buttons depending on a choice of what you want to do with the LED. If you want to turn on the LED when the button is pressed and then turn off the LED when the button is pressed another time this is the wiring needed.
+               </p>
+               <figure>
+                <img class="img-rounded" src="pics/button2.png" alt="Push Button Wiring 2" width="240" height="240">
+                <figcaption>Push Button Pin Wiring (LED always on)</figcaption>
+              </figure>
+
+
+              <p style="text-align: left;padding: 0px 30px;">
+                If you want to have the LED permanently on and the button to act as a peripheral this is the wiring needed. Luckily enough, the software was not difficult to establish. They are controlled exactly the same as piTFT buttons. One GPIO pin is needed and the setup is as follows. The pin is read as GPIO IN and is needed to be pulled down. (“GPIO.setup(Pin#, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)”). To read the data make sure to read on the rising edge for cleaner reads.</p>
+              
+
+              <h2>Rotary Encoders</h2>
+              <figure>
+                <img class="img-rounded" src="pics/encoder.png" alt="Rotary Encoder" width="240" height="240">
+                <figcaption>Rotary Encoder</figcaption>
+              </figure>
+
+
+              <p style="text-align: left;padding: 0px 30px;">
+                
+               </p>
+              </div>
 
     
 
@@ -297,6 +344,7 @@ The software component of the project final contained one file final_pt3.py. In 
           <ul>
               <li>Raspberry Pi 4 - Provided in Lab</li>
               <li>Capacitive piTFT - Provided in Lab</li>
+              <li>2 x Rotary Encoder - Provided in Lab</li>
               <li>Arduino Uno with USB cord - $27.60</li>
               <a href="https://www.amazon.com/dp/B09D7P3RWZ?psc=1&ref=ppx_yo2ov_dt_b_product_details"><li>3 x 10K Ohm Slide Potentiometer (60 mm) - $13.49 for 5</li></a>
               <a href="https://www.amazon.com/dp/B0C38PBG9R?psc=1&ref=ppx_yo2ov_dt_b_product_details"><li>4 x 12mm Momentary Push Button w/ Green LED - $12.66 for 5</li></a>

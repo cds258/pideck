@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="PiDeck - An All-in-One DJ Controller using Raspberry Pi">
+    <meta name="author" content="Christopher Schiff and Justin Green">
+    <title>PiDeck</title>
+    <link href="dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="starter-template.css" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">PiDeck</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="#">Home</a></li>
+                <li><a href="#intro">Introduction</a></li>
+                <li><a href="#obj">Project Objective</a></li>
+                <li><a href="#design">Design</a></li>
+                <li><a href="#drawings">Hardware Guide</a></li>
+                <li><a href="#results">Results</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="starter-template">
+        <h1>PiDeck</h1>
+        <p class="lead">An All-in-One DJ Controller using Raspberry Pi<br>By Christopher Schiff and Justin Green</p>
+    </div>
+
+    <hr>
+    <div class="center-block">
+        <iframe width="640" height="360" src="https://www.youtube.com/embed/et91Gea6CPk" frameborder="0" allowfullscreen></iframe>
+        <h4 style="text-align:center;">Demonstration Video</h4>
+    </div>
+
+    <hr id="intro">
+
+    <div style="text-align:center;">
+        <h2>Introduction</h2>
+        <p style="text-align: left; padding: 0px 30px;">
+            The rise of DJing among younger generations is evident in clubs, where DJs use high-tech controllers to mix music and create entertaining performances. Our project, PiDeck, leverages Pygame to mix audio files, combining several peripherals to create an engaging and entertaining DJ controller.
+        </p>
+    </div>
+
+    <hr id='obj'>
+
+    <div class="row">
+        <div class="col-md-4" style="text-align:center;">
+            <figure>
+                <img class="img-rounded" src="pics/controller.png" alt="Commercial DJ Controller" width="380" height="240">
+                <figcaption>Commercial DJ Controller</figcaption>
+            </figure>
+        </div>
+        <div class="col-md-8" style="font-size:18px;">
+            <h2>Project Objective</h2>
+            <ul>
+                <li>Manipulate music in an engaging way</li>
+                <li>Easy-to-understand controls</li>
+                <li>Visually appealing board</li>
+            </ul>
+        </div>
+    </div>
+
+    <hr id='design'>
+
+    <div style="text-align:center;">
+        <h2>Design</h2>
+        <h3>Hardware</h3>
+        <figure>
+            <img class="img-rounded" src="pics/gpio.png" alt="Hardware Overview" width="640" height="480">
+            <figcaption>Hardware Overview</figcaption>
+        </figure>
+        <br>
+        <p style="text-align: left; padding: 0px 30px;">
+            The hardware for PiDeck includes 4 large push buttons, 4 small push buttons, 2 rotary encoders, and a piTFT. Managing these components with the limited GPIO pins on the Raspberry Pi was challenging, so we used an Arduino Uno for the additional inputs, connecting the potentiometers to it. The GPIO pin usage is detailed below:
+        </p>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Sensor</th>
+                        <th>GPIO Pin #('s)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Large Push Button</td><td>26</td></tr>
+                    <tr><td>Large Push Button</td><td>19</td></tr>
+                    <tr><td>Large Push Button</td><td>12</td></tr>
+                    <tr><td>Large Push Button</td><td>16</td></tr>
+                    <tr><td>Small Push Button</td><td>5</td></tr>
+                    <tr><td>Small Push Button</td><td>4</td></tr>
+                    <tr><td>Rotary Encoder</td><td>20, 21</td></tr>
+                    <tr><td>Rotary Encoder</td><td>13, 6</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p>Figure 3: GPIO Pin Table</p>
+        <h3>3D Printed Enclosure</h3>
+        <p style="text-align: left; padding: 0px 30px;">The physical DJ board was 3D printed.</p>
+        <h3>Software</h3>
+        <p style="text-align: left; padding: 0px 30px;">
+            We used Pygame for audio processing, opting for pygame.mixer.Sound to enable dual song setup and sound effects. The software handles data gathering, music playback, and parameter adjustments. Below is an overview of the software logic.
+        </p>
+        <figure>
+            <img class="img-rounded" src="pics/software.png" alt="Software Overview" width="540" height="460">
+            <figcaption>Software Overview</figcaption>
+        </figure>
+        <br>
+        <p style="text-align: left; padding: 0px 30px;">
+            The program runs until a quit variable is set. It monitors button presses and rotary encoder changes, adjusting the environment accordingly. The potentiometers control volume, with each side's volume adjusted independently and relative to a crossfade slider. Large push buttons control song selection and pausing, with state machines managing the playback state.
+        </p>
+        <figure>
+            <img class="img-rounded" src="pics/fsm1.png" alt="Paused State Machine Diagram" width="340" height="240">
+            <figcaption>Paused State Machine Diagram</figcaption>
+        </figure>
+        <br>
+        <p style="text-align: left; padding: 0px 30px;">
+            The piTFT buttons add sound effects, and the program displays song progress and selection options. The potentiometers send data from the Arduino to the Pi, adjusting volume in real time. Customization options include adding .wav files to the audio_files directory for songs and sound effects.
+        </p>
+    </div>
+
+    <hr id='drawings'>
+
+    <div style="text-align:center;">
+        <h2>Hardware Guide</h2>
+        <h3>Slide Potentiometer</h3>
+        <figure>
+            <img class="img-rounded" src="pics/linearpot.png" alt="Slide Potentiometer Pinout" width="380" height="240">
+            <figcaption>Slide Potentiometer Pinout</figcaption>
+        </figure>
+        <br>
+        <p style="text-align: left; padding: 0px 30px;">
+            The potentiometer has six pins. Each set of three pins (left or right) includes one output, one ground, and one Vcc. A 10k ohm built-in resistor handles input voltage values of 3.3V to 5V, with 5V preferred. The potentiometer requires an ADC for useful values with the Raspberry Pi. When using an Arduino, connect the output to an analog pin and call analogRead(pin#). Note that the potentiometer's response is exponential.
+        </p>
+        <h2>LED Push Buttons</h2>
+        <figure>
+            <img class="img-rounded" src="pics/button1.png" alt="Push Button Wiring 1" width="240" height="240">
+            <figcaption>Push Button Pin Wiring (LED on when pushed)</figcaption>
+        </figure>
+        <p style="text-align: left; padding: 0px 30px;">
+            To turn on the LED when the button is pressed and off when pressed again, use this wiring. If you want the LED permanently on, use the wiring below.
+        </p>
+        <figure>
+            <img class="img-rounded" src="pics/button2.png" alt="Push Button Wiring 2" width="240" height="240">
+            <figcaption>Push Button Pin Wiring (LED always on)</figcaption>
+        </figure>
+        <p style="text-align: left; padding: 0px 30px;">
+            The buttons are controlled similarly to piTFT buttons, requiring one GPIO pin set to GPIO IN and pulled down.
+        </p>
+    </div>
+
+    <hr id='results'>
+
+    <div style="text-align:center;">
+        <h2>Results</h2>
+        <h3>Conclusions</h3>
+        <p style="text-align: left; padding: 0px 30px;">
+            We achieved our goals with PiDeck, providing volume control, start/stop control, sound effects, and dual song playback. The project showcases the value of pygame.mixer.Sound for multi-channel playback and effective user feedback through the piTFT display.
+        </p>
+        <h3>Future Work</h3>
+        <p style="text-align: left; padding: 0px 30px;">
+            Future improvements include enhancing volume slider responsiveness, adding more peripherals for increased control, restructuring audio output for speed and position changes, and enabling live song uploads for greater flexibility.
+        </p>
+    </div>
+
+    <hr>
+
+    <div class="row" style="text-align:center;">
+        <h2>Work Distribution</h2>
+        <div style="text-align:center;">
+            <img class="img-rounded" src="pics/deck.png" alt="PiDeck in Lab" style="width:40%;">
+        </div>
+        <br>
+        <div class="col-md-6" style="font-size:16px">
+            <img class="img-rounded" src="pics/justin2.png" alt="Justin Green" width="180" height="240">
+            <h3>Justin Green</h3>
+            <p class="lead">jtg239@cornell.edu</p>
+            <p>
+                <ul>
+                    <li>Sensors Debugger</li>
+                    <li>Music Selector</li>
+                    <li>Feature Planner</li>
+                    <li>Program Implementer</li>
+                    <li>Circuit Designer</li>
+                    <li>Early Riser</li>
+                </ul>
+            </p>
+        </div>
+        <div class="col-md-6" style="font-size:16px">
+            <img class="img-rounded" src="pics/christopher.jpeg" alt="Christopher Schiff" width="240" height="240">
+            <h3>Christopher Schiff</h3>
+            <p class="lead">cds258@cornell.edu</p>
+            <p>
+                <ul>
+                    <li>3D Designer</li>
+                    <li>Program Implementer</li>
+                    <li>Circuit Designer</li>
+                    <li>Late Sleeper</li>
+                </ul>
+            </p>
+        </div>
+    </div>
+
+    <hr>
+    <div style="font-size:18px">
+        <h2>Parts List</h2>
+        <ul>
+            <li>Raspberry Pi 4 - Provided in Lab</li>
+            <li>Capacitive piTFT - Provided in Lab</li>
+            <li>Arduino Uno with USB cord - $27.60</li>
+            <li><a href="https://www.amazon.com/dp/B09D7P3RWZ?psc=1&ref=ppx_yo2ov_dt_b_product_details">3 x 10K Ohm Slide Potentiometer (60 mm) - $13.49 for 5</a></li>
+            <li><a href="https://www.amazon.com/dp/B0C38PBG9R?psc=1&ref=ppx_yo2ov_dt_b_product_details">4 x 12mm Momentary Push Button w/ Green LED - $12.66 for 5</a></li>
+            <li><a href="https://www.amazon.com/dp/B0C38PWG2B?psc=1&ref=ppx_yo2ov_dt_b_product_details">4 x 12mm Momentary Push Button w/ Blue LED - $12.66 for 5</a></li>
+            <li><a href="https://www.amazon.com/dp/B08L13JG8M?ref=ppx_yo2ov_dt_b_product_details&th=1">4 x 19mm Momentary Push Button w/ Blue LED- $13.98 for 5</a></li>
+            <li><a href="https://www.amazon.com/dp/B01MRWL6JS?psc=1&ref=ppx_yo2ov_dt_b_product_details">2 x 16mm Rectangular Push Button w/ White LED* - $9.99 for 5</a></li>
+            <li><a href="https://www.amazon.com/dp/B07T5BFC99?psc=1&ref=ppx_yo2ov_dt_b_product_details">1 x LED Rocker Switch* - $8.66 for 4</a></li>
+            <li>Resistors and Wires - Provided in lab</li>
+            <li>*Included in physical enclosure but unused in project</li>
+        </ul>
+    </div>
+    <hr>
+    <div style="font-size:18px">
+        <h2>References</h2>
+        <a href="https://www.pygame.org/wiki/tutorials">Pygame</a><br>
+        <a href="https://www.pygame.org/docs/ref/mixer.html">Pygame.Mixer</a><br>
+        <a href="https://roboticsbackend.com/raspberry-pi-arduino-serial-communication/">UART Arduino Raspi</a><br>
+        <a href="https://learn.adafruit.com/adafruit-2-8-pitft-capacitive-touch/downloads">piTFT</a><br>
+        <a href="https://sourceforge.net/p/raspberry-gpio-python/wiki/Home/">R-Pi GPIO Documentation</a><br>
+    </div>
+    <hr>
+    <div class="row">
+        <h2>Code Appendix</h2>
+        <h3>RPi Code (final_pt3.py)</h3>
+        <pre><code>import os
+import pygame
+import RPi.GPIO as GPIO
+import time
+import pigame
+from pydub.utils import mediainfo
+from pydub import AudioSegment
+import serial
+import threading
+
+os.putenv('SDL_VIDEODRV', 'fbcon')
+os.putenv('SDL_FBDEV', '/dev/fb0')
+os.putenv('SDL_MOUSEDRV', 'dummy')
+os.putenv('SDL_MOUSEDEV', '/dev/null')
+os.putenv('DISPLAY', '')
+
+# Initialize Pygame
+pygame.init()
+pitft = pigame.PiTft()
+size = width, height = 320, 240
+screen = pygame.display.set_mode(size)
+pygame.display.set_caption('Dual Channel Music Player')
+font = pygame.font.Font(None, 20)
+font2 = pygame.font.Font(None, 15)
+background_color = (30, 30, 30)
+text_color = (255, 255, 255)
+highlight_color = (255, 200, 0)
+outline_color = (255, 255, 0)  # Yellow outline for visibility
+
+# Initialize PauseL
+pauseL = False
+firstL = True
+paused_timeL = 0.0
+paused_initL = 0.0
+elapsed_timeL = 0.0
+# Initialize PauseR
+pauseR = False
+firstR = True
+paused_timeR = 0.0
+paused_initR = 0.0
+elapsed_timeR = 0.0
+
+# Encoder 1
+pin_a1 = 20  # Encoder 1 pin A
+pin_b1 = 21  # Encoder 1 pin B
+# Encoder 2
+pin_a2 = 13  # Encoder 2 pin A
+pin_b2 = 6  # Encoder 2 pin B
+
+# Initialize GPIO
+GPIO.setmode(GPIO.BCM)
+buttons = {'quit': 27, 'sound1': 17, 'sound2': 22, 'sound3': 23, 
+'A1' :pin_a1, 'B1': pin_b1, 'A2': pin_a2, 'B2': pin_b2 }
+
+for button in buttons.values():
+    GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+# Initialize the mixer
+pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=4096)
+channels = [pygame.mixer.Channel(0), pygame.mixer.Channel(1), pygame.mixer.Channel(2)]
+music_directory = 'audio_files'
+songs = sorted([f for f in os.listdir(music_directory) if f.endswith('.wav')])
+indexes = [0, 0]  # Indexes for each channel's current selection
+currently_playing = [0, 0]
+active_list = 0   # Initialize active_list
+
+# Load durations using Pydub
+def get_durations(songs, music_directory):
+    durations = []
+    for song in songs:
+        song_path = os.path.join(music_directory, song)
+        audio_info = mediainfo(song_path)
+        duration = float(audio_info['duration'])
+        durations.append(duration)
+    return durations
+
+song_durations = get_durations(songs, music_directory)
+start_times = [None, None]  # Start times for each song
+label_max = 20
+
+def play_song(channel_index, song_index):
+    track = pygame.mixer.Sound(os.path.join(music_directory, songs[song_index]))
+    channels[channel_index].play(track)
+    start_times[channel_index] = time.time()
+    currently_playing[channel_index] = song_index
+
+def draw_menu():
+    global paused_timeL, firstL, elapsed_timeL, pauseL, paused_initL, paused_timeR, firstR, elapsed_timeR, pauseR, paused_initR
+    screen.fill(background_color)
+    y_offset = 8
+    for i, song in enumerate(songs):
+        for j in range(2):  # Assuming two channels
+            x_offset = 10 + j * 150
+            is_active = indexes[j] == i #and j == active_list
+            color = highlight_color if is_active else text_color
+            song_label = f'> {song}' if is_active else song
+            if len(song_label) > label_max:
+                song_label = song_label[:label_max]
+            text_surf = font.render(song_label, True, color)
+            screen.blit(text_surf, (x_offset, y_offset + i * 20))
+
+    # Draw progress bars with outlines and current song names
+    bar_height = 20
+    bar_width = 140
+    for j in range(2):
+        bar_x = 10 + j * 150
+        bar_y = y_offset + len(songs) * 20 + 20  # Additional space for song name text
+        if channels[j].get_busy() and start_times[j] is not None:
+            # Display the current song name
+            current_song_name = songs[currently_playing[j]]
+            if len(current_song_name) > label_max:
+                current_song_name = current_song_name[:label_max]
+            song_name_surf = font2.render(current_song_name, True, highlight_color)
+            screen.blit(song_name_surf, (bar_x, bar_y - 15))  # Position above the progress bar
+
+            # Calculate and draw the progress bar
+            if j == 0:
+                if pauseL:
+                    if firstL:
+                        paused_initL = time.time()
+                        firstL = False
+                    else:
+                        paused_timeL = time.time() - paused_initL
+                else:
+                    if paused_timeL != 0:
+                        firstL = True
+                        start_times[j] += paused_timeL
+                        paused_timeL, paused_initL = 0,0
+                    elapsed_timeL = time.time() - start_times[j]
+                # progress = elapsed_timeL / song_durations[j]
+            else: 
+                if pauseR:
+                    if firstR:
+                        paused_initR = time.time()
+                        firstR = False
+                    else:
+                        paused_timeR = time.time() - paused_initR
+                else:
+                    if paused_timeR != 0:
+                        firstR = True
+                        start_times[j] += paused_timeR
+                        paused_timeR, paused_initR = 0,0
+                    elapsed_timeR = time.time() - start_times[j]
+                # progress = elapsed_timeR / song_durations[j]
+            progress = elapsed_timeL / song_durations[j] if j == 0 else elapsed_timeR / song_durations[j]
+            bar_length = int(progress * bar_width)
+            pygame.draw.rect(screen, highlight_color, (bar_x, bar_y, bar_length, bar_height))
+            pygame.draw.rect(screen, outline_color, (bar_x, bar_y, bar_width, bar_height), 2)  # Outline
+    
+    pygame.display.flip()
+    pitft.update()
+
+def handle_quit(channel):
+    pygame.quit()
+    GPIO.cleanup()
+    del(pitft)
+    import sys
+    sys.exit(0)
+    exit()
+
+def handle_select(channel):
+    channels[active_list].stop()
+    play_song(active_list, indexes[active_list])
+
+def handle_scroll(channel):
+    indexes[active_list] = (indexes[active_list] + 1) % len(songs)
+    draw_menu()
+
+def scroll_wheel(id, amt):
+    #print(f"scroll {id},{amt}")
+    global indexes, songs
+    indexes[id] = (indexes[id] + amt) % len(songs)
+    draw_menu()
+
+def handle_switch(channel):
+    global active_list
+    active_list = 1 - active_list
+    draw_menu()
+
+#GPIO.setup([pin_a1, pin_b1, pin_a2, pin_b2], GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+# Counters for each encoder
+counter1 = 0
+last_state1 = None
+counter2 = 0
+last_state2 = None
+
+#define volume parameters
+vol = 1
+
+count0 = 0
+count1 = 0
+
+clk0LastState = GPIO.input(pin_a1)
+clk1LastState = GPIO.input(pin_a2)
+
+def handle_rotary0():
+    global count0, clk0LastState
+    clk0State = GPIO.input(pin_a1)
+    dt0State = GPIO.input(pin_b1)
+    if clk0State != clk0LastState:
+        if dt0State != clk0State:
+            count0 += 1
+            scroll_wheel(0,-1)
+        else:
+            count0 -= 1
+            scroll_wheel(0,1)
+        #print(f"count0: {count0}")
+    clk0LastState = clk0State
+
+def handle_rotary1():
+    global count1, clk1LastState
+    clk1State = GPIO.input(pin_a2)
+    dt1State = GPIO.input(pin_b2)
+    if clk1State != clk1LastState:
+        if dt1State != clk1State:
+            count1 += 1
+            scroll_wheel(1,1)
+        else:
+            count1 -= 1
+            scroll_wheel(1,-1)
+        #print(f"count1: {count1}")
+    clk1LastState = clk1State
+
+# Callback function for Encoder 1
+def rotary_callback1():
+    #print("rcb1")
+    global counter1, last_state1
+    state_a = GPIO.input(pin_a1)
+    state_b = GPIO.input(pin_b1)
+    if state_a and state_b:
+        if last_state1 == "CW":
+            counter1 -= 1
+            scroll_wheel(0,-1)
+        elif last_state1 == "CCW":
+            counter1 += 1
+            scroll_wheel(0,1)
+        #print("Encoder 1 Counter: ", counter1)
+    elif state_a and not state_b:
+        last_state1 = "CW"
+    elif not state_a and state_b:
+        last_state1 = "CCW"
+
+# Callback function for Encoder 2
+def rotary_callback2():
+    #print("rcb2")
+    global counter2, last_state2
+    state_a = GPIO.input(pin_a2)
+    state_b = GPIO.input(pin_b2)
+    if state_a and state_b:
+        if last_state2 == "CW":
+            counter2 += 1
+            scroll_wheel(1,1)
+        elif last_state2 == "CCW":
+            counter2 -= 1
+            scroll_wheel(1,-1)
+       # print("Encoder 2 Counter: ", counter2)
+    elif state_a and not state_b:
+        last_state2 = "CW"
+    elif not state_a and state_b:
+        last_state2 = "CCW"
+
+def sound_effect1(channel):
+    # Stop any current playback on the new channel
+    # Stop any current playback on the new channel
+    channels[2].stop()
+    # Play the sound effect on the new channel
+    sound_effect = pygame.mixer.Sound('/home/pi/final_project/sound1.wav')
+    channels[2].play(sound_effect)
+
+def sound_effect2(channel):
+    # Stop any current playback on the new channel
+    channels[2].stop()
+    # Play the sound effect on the new channel
+    sound_effect = pygame.mixer.Sound('/home/pi/final_project/sound2.wav')
+    channels[2].play(sound_effect)
+
+def sound_effect3(channel):
+    # Stop any current playback on the new channel
+    channels[2].stop()
+    # Play the sound effect on the new channel
+    sound_effect = pygame.mixer.Sound('/home/pi/final_project/sound3.wav')
+    channels[2].play(sound_effect)
+
+
+# Attach callbacks
+GPIO.add_event_detect(buttons['quit'], GPIO.FALLING, callback=handle_quit, bouncetime=300)
+GPIO.add_event_detect(buttons['sound1'], GPIO.FALLING, callback=sound_effect1, bouncetime=300)
+GPIO.add_event_detect(buttons['sound2'], GPIO.FALLING, callback=sound_effect2, bouncetime=300)
+GPIO.add_event_detect(buttons['sound3'], GPIO.FALLING, callback=sound_effect3, bouncetime=300)
+# Add event detection for both encoders
+# GPIO.add_event_detect(pin_a1, GPIO.BOTH, callback=rotary_callback1, bouncetime=100)
+# GPIO.add_event_detect(pin_b1, GPIO.BOTH, callback=rotary_callback1, bouncetime=100)
+# GPIO.add_event_detect(pin_a2, GPIO.BOTH, callback=rotary_callback2, bouncetime=100)
+# GPIO.add_event_detect(pin_b2, GPIO.BOTH, callback=rotary_callback2, bouncetime=100)
+
+
+GPIO.setup(26, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(19, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(12, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(16, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+
+GPIO.setup(4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(5, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+
+ch1_pause = False
+ch2_pause = False
+ch1_play = False
+ch2_play = False
+
+def left_left_cb(channel):
+    # CH1 Select
+    #print("CH1 Select")
+    global ch1_play, ch1_pause
+    if not ch1_pause:
+      channels[0].stop()
+      play_song(0, indexes[0])
+      ch1_play = True
+
+def left_right_cb(channel):
+    # CH1  Pause
+    #print("CH1 Pause")
+    global ch1_pause, pauseL, ch1_play
+    if(ch1_pause):
+        channels[0].unpause()
+        ch1_pause = False
+        ch1_play = True
+        pauseL = False
+    else:
+        channels[0].pause()
+        if (ch1_play):
+          pauseL = True
+          ch1_pause = True
+          ch1_play = False
+        
+def right_left_cb(channel):
+    # CH2 Pause
+    #print("CH2 Pause")
+    global ch2_pause, pauseR, ch2_play
+    if(ch2_pause):
+        channels[1].unpause()
+        ch2_pause = False
+        ch2_play = True
+        pauseR = False
+    else:
+        channels[1].pause()
+        if ch2_play:
+          ch2_pause = True
+          pauseR = True
+          ch2_play = False
+
+def right_right_cb(channel):
+    # CH2 Select
+    #print("CH2 Select")
+    global ch2_play, ch2_pause
+    if not ch2_pause:
+      channels[1].stop()
+      play_song(1, indexes[1])
+      ch2_play = True
+
+GPIO.add_event_detect(26, GPIO.RISING, callback=left_right_cb, bouncetime=200)
+GPIO.add_event_detect(19, GPIO.RISING, callback=left_left_cb, bouncetime=200)
+GPIO.add_event_detect(12, GPIO.RISING, callback=right_right_cb, bouncetime=200)
+GPIO.add_event_detect(16, GPIO.RISING, callback=right_left_cb, bouncetime=200)
+
+def inc_volume(channel):
+  global vol
+  vol *= 1.1
+
+def dec_volume(channel):
+  global vol
+  vol /= 1.1
+
+
+GPIO.add_event_detect(5, GPIO.RISING, callback=inc_volume, bouncetime=200)
+GPIO.add_event_detect(4, GPIO.RISING, callback=dec_volume, bouncetime=200)
+
+def map_value(x, original_max=29.35, target_max=1):
+    return x / original_max
+    
+ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
+ser.reset_input_buffer()
+
+
+data = {'pot#l' : 0.5, 'pot#r': 0.5, 'pot#c': 0.5}
+def update_volumes():
+    # Calculate the effective volume for each channel
+    # Channel 1 (Left) fades in as pot#c goes from 0 to 1
+    # Channel 0 (Right) fades out as pot#c goes from 0 to 1
+    left_volume = vol * data['pot#l'] * data['pot#c']  # Increases as pot#c goes from 0 to 1
+    right_volume = vol * data['pot#r'] * (1 - data['pot#c'])  # Decreases as pot#c goes from 0 to 1
+
+    # Set the volumes
+    channels[1].set_volume(left_volume)
+    channels[0].set_volume(right_volume)
+
+
+
+
+def rotary_encoder_thread():
+    global counter1, last_state1, counter2, last_state2
+
+    global count0, clk0LastState, count1, clk1LastState
+    while True:
+        handle_rotary0()
+        handle_rotary1()
+        # rotary_callback1()
+        # rotary_callback2()
+        #thread.sleep(0.01)
+
+
+# Create and start the rotary encoder thread
+rotary_thread = threading.Thread(target=rotary_encoder_thread)
+rotary_thread.daemon = True
+rotary_thread.start()
+
+
+try:
+    while True:
+       
+        
+        draw_menu()
+        
+        if ser.in_waiting > 0:
+            line = ser.readline().decode('utf-8', errors='ignore').rstrip()
+            if line:
+                try:
+                    # Split the line by commas and filter out empty strings
+                    entries = filter(None, line.split(','))
+                    # Loop through each non-empty entry and parse it
+                    for entry in entries:
+                        # Split the entry into key and value parts
+                        key, value = entry.split(':')
+                        # Clean up any whitespace and convert value to float
+                        key = key.strip()
+                        value = float(value.strip())
+                        data[key] = map_value(value)
+                    # Now you can use the data dictionary for further processing
+                  #  print(data)  # Example usage
+                    update_volumes()
+                except ValueError as e:
+                    print(f"Error parsing line: {line}, Error: {e}")
+        
+       # thread.sleep(0.01)
+
+except:
+    print("Caught exception")
+    GPIO.cleanup()        
+finally:
+    GPIO.cleanup()
+    del(pitft)
+
+
+              </code></pre>
+      <h3>Arduino Uno Code (potentiometer.ino)</h3>
+      <pre><code>
+        #define pot1 A0
+#define pot2 A1
+#define pot3 A2
+
+float val;
+String pos;
+
+void setup() {
+  pinMode(A0, OUTPUT);
+  pinMode(A1, OUTPUT);
+  pinMode(A2, OUTPUT);
+  Serial.begin(9600);
+
+}
+
+void loop() {
+  //Prints the value of ADC
+  for (int chan=0; chan<3; chan++) {
+    if (chan == 0) {
+      val = analogRead(pot1);
+      pos = "c";
+    }
+    else if (chan == 1) {
+      val = analogRead(pot2); 
+      pos = "l";
+    }
+    else {
+      val = analogRead(pot3);
+      pos = "r";
+    }
+    if (val == 0.00) {
+      val = 1;
+    }
+    val = 10 * log10(val);
+    Serial.print("pot#");
+    Serial.print(pos);
+    Serial.print(": ");
+    Serial.print(val);
+    Serial.print(",\n");
+  }
+  
+ 
+  delay(10);
+}
+
+
+</code></pre>
+      </div>
+
+    </div><!-- /.container -->
+
+
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+    <script src="dist/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <!-- <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script> -->
+  </body>
+</html>
